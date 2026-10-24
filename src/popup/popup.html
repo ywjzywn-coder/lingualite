@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>轻译 LinguaLite</title>
+    <link rel="stylesheet" href="tokens.css" />
+    <link rel="stylesheet" href="controls.css" />
+    <link rel="stylesheet" href="components.css" />
+    <style>
+      /* 内容直接铺满弹窗窗口，圆角由 Chrome 对弹窗窗口的原生裁切提供。
+         自己再画一层圆角边框，圆角半径和窗口裁切对不上，
+         四角会露出「方角包圆角」的空隙和一圈多余的方形描边。 */
+      html {
+        width: 320px;
+        background: var(--background);
+        color-scheme: light dark;
+      }
+      body {
+        width: 320px;
+        margin: 0;
+        background: var(--background);
+      }
+      #app {
+        display: flex;
+        flex-direction: column;
+        padding: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="popup.js"></script>
+  </body>
+</html>

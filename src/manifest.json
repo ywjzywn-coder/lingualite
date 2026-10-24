@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "轻译 LinguaLite",
+  "version": "0.0.0",
+  "description": "轻量的双语字幕与沉浸式翻译：YouTube/Bilibili 双语字幕、网页对照翻译、划词查词、生词本、无字幕视频语音转录。",
+  "minimum_chrome_version": "116",
+  "icons": {
+    "16": "icons/ic16.png",
+    "32": "icons/ic32.png",
+    "48": "icons/ic48.png",
+    "128": "icons/ic128.png"
+  },
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "contextMenus",
+    "scripting",
+    "tabCapture",
+    "offscreen"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "轻译 LinguaLite",
+    "default_icon": {
+      "16": "icons/ic16.png",
+      "32": "icons/ic32.png",
+      "48": "icons/ic48.png",
+      "128": "icons/ic128.png"
+    }
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ]
+}

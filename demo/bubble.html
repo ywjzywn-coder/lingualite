@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>轻译 · 划词气泡预览</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 32px;
+        font: 15px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        color: #1f2328;
+        background: #fbfbfd;
+      }
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 18px;
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 16px 0;
+      }
+      button {
+        padding: 6px 12px;
+        border: 1px solid #d7d9df;
+        border-radius: 8px;
+        background: #fff;
+        font: inherit;
+        cursor: pointer;
+      }
+      button:hover {
+        border-color: #4f46e5;
+        color: #4f46e5;
+      }
+      p {
+        padding: 12px;
+        border: 1px dashed #d7d9df;
+        border-radius: 8px;
+        background: #fff;
+      }
+      #status {
+        color: #6b7280;
+        font-size: 13px;
+        min-height: 1.4em;
+      }
+      code {
+        background: #eef0f4;
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>划词气泡预览</h1>
+      <p>
+        这是开发用的预览页，不需要加载扩展。先在下面的虚线框里用鼠标选中一段文字，再点按钮，
+        气泡会出现在选区下方，行为和扩展里完全一致。按 <code>Esc</code> 或点击空白处可关闭。
+      </p>
+      <div class="bar">
+        <button id="btn-loading">加载中</button>
+        <button id="btn-done">翻译结果</button>
+        <button id="btn-long">超长译文</button>
+        <button id="btn-error">错误状态</button>
+        <button id="btn-hide">隐藏</button>
+      </div>
+      <p id="paragraph">
+        Translation quality depends heavily on the context you provide. Select any part of this
+        paragraph to see where the bubble appears, then try the buttons above.
+      </p>
+      <div id="status"></div>
+    </main>
+    <script src="bubble.js"></script>
+  </body>
+</html>

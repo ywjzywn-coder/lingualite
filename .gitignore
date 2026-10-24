@@ -1,0 +1,10 @@
+# 依赖与构建产物
+node_modules/
+dist/
+
+# 预览页的打包产物（由 npm run demo 生成）
+demo/*.js
+demo/*.css
+
+# 系统文件
+.DS_Store

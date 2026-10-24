@@ -1,0 +1,160 @@
+/*
+ * 控件层：内嵌到网页里的 UI（划词气泡、进度胶囊）与扩展页面共用的最小控件集合。
+ * 这个文件会被内联进内容脚本，所以要克制——只放两边都用得到的东西。
+ * 页面专用的组件（卡片、表单、开关等）在 components.css。
+ */
+
+/* ---------- Button ---------- */
+/* base: inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium
+         whitespace-nowrap transition-all outline-none
+         focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
+         disabled:pointer-events-none disabled:opacity-50
+   尺寸默认 h-8（比上游 h-9 小一号，适配弹窗与悬浮 UI） */
+.btn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2rem;
+  padding-inline: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 1px 2px 0 color-mix(in oklab, var(--shadow-color) 5%, transparent);
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s,
+    box-shadow 0.15s;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.btn:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent);
+}
+
+.btn:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* variant=default: bg-primary text-primary-foreground hover:bg-primary/90 */
+.btn-primary {
+  border-color: transparent;
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--primary) 90%, transparent);
+  color: var(--primary-foreground);
+}
+
+/* variant=secondary: bg-secondary text-secondary-foreground hover:bg-secondary/80 */
+.btn-secondary {
+  border-color: transparent;
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--secondary) 80%, transparent);
+  color: var(--secondary-foreground);
+}
+
+/* variant=ghost: hover:bg-accent hover:text-accent-foreground */
+.btn-ghost {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* variant=destructive */
+.btn-danger {
+  border-color: transparent;
+  background: var(--destructive);
+  color: #fff;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--destructive) 90%, transparent);
+  color: #fff;
+}
+
+/* size=sm / xs / icon */
+.btn-sm {
+  height: 1.75rem;
+  padding-inline: 0.625rem;
+  font-size: 0.8125rem;
+}
+
+.btn-xs {
+  height: 1.5rem;
+  padding-inline: 0.5rem;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.btn-icon {
+  width: 2rem;
+  padding-inline: 0;
+}
+
+.btn-xs.btn-icon {
+  width: 1.5rem;
+}
+
+/* ---------- Separator ---------- */
+.separator {
+  height: 1px;
+  width: 100%;
+  flex: none;
+  background: var(--border);
+}
+
+/* ---------- 深色微调 ---------- */
+/* 对应上游的 dark: 前缀：outline 按钮以 input 作为底色 */
+[data-theme='dark'] .btn {
+  border-color: var(--input);
+  background: color-mix(in oklab, var(--input) 30%, transparent);
+}
+
+[data-theme='dark'] .btn:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--input) 50%, transparent);
+}
+
+[data-theme='dark'] .btn-primary,
+[data-theme='dark'] .btn-secondary,
+[data-theme='dark'] .btn-danger,
+[data-theme='dark'] .btn-ghost {
+  border-color: transparent;
+}
+
+[data-theme='dark'] .btn-primary {
+  background: var(--primary);
+}
+
+[data-theme='dark'] .btn-secondary {
+  background: var(--secondary);
+}
+
+[data-theme='dark'] .btn-danger {
+  background: color-mix(in oklab, var(--destructive) 60%, transparent);
+}
+
+[data-theme='dark'] .btn-ghost {
+  background: transparent;
+}

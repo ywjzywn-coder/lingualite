@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Pragmatic Programmer's Guide to Immersive Reading</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0 0 80px;
+        font: 16px/1.75 Georgia, "Times New Roman", serif;
+        color: #1f2328;
+        background: #fff;
+      }
+      .bar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        padding: 10px 16px;
+        background: #f6f7f9;
+        border-bottom: 1px solid #e3e5e9;
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+        font-size: 13px;
+      }
+      .bar button {
+        padding: 5px 11px;
+        border: 1px solid #d7d9df;
+        border-radius: 7px;
+        background: #fff;
+        font: inherit;
+        cursor: pointer;
+      }
+      .bar button:hover {
+        border-color: #4f46e5;
+        color: #4f46e5;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin: 16px 0;
+      }
+      .cards .card {
+        display: block;
+        padding: 16px;
+        border: 1px solid #e3e5e9;
+        border-radius: 10px;
+        background: #fff;
+        color: inherit;
+        text-decoration: none;
+      }
+      .cards h3 {
+        margin: 0 0 8px;
+        font-size: 17px;
+      }
+      .cards .cta {
+        color: #c05621;
+        font-weight: 600;
+      }
+      /* 图标字体占位：真实站点用 Material Symbols，连字会渲染成图标；
+         预览页没有这个字体，所以把 .ms 压成一个色块，避免连字文本撑坏布局 */
+      .ms {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        background: currentColor;
+        opacity: .35;
+        font-size: 0 !important;
+        vertical-align: middle;
+      }
+      #status {
+        color: #6b7280;
+        font-family: -apple-system, sans-serif;
+        font-size: 12px;
+      }
+      article {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 24px 20px;
+      }
+      h1 {
+        font-size: 30px;
+        line-height: 1.3;
+      }
+      h2 {
+        margin-top: 36px;
+        font-size: 21px;
+      }
+      blockquote {
+        margin: 20px 0;
+        padding: 2px 16px;
+        border-left: 3px solid #d7d9df;
+        color: #4b5563;
+      }
+      code {
+        padding: 1px 5px;
+        background: #f1f2f5;
+        border-radius: 4px;
+        font-size: 0.9em;
+      }
+      pre {
+        padding: 12px;
+        overflow: auto;
+        background: #f1f2f5;
+        border-radius: 8px;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+      }
+      th,
+      td {
+        padding: 8px 10px;
+        border: 1px solid #e3e5e9;
+        text-align: left;
+      }
+      .meta {
+        color: #6b7280;
+        font-size: 14px;
+      }
+      figure {
+        margin: 24px 0;
+      }
+      .mark {
+        display: inline-block;
+        width: 120px;
+        height: 60px;
+        border: 1px solid #e3e5e9;
+        border-radius: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bar">
+      <button id="btn-translate">翻译此页</button>
+      <button id="btn-restore">还原原文</button>
+      <button id="btn-scroll">往返滚动一遍</button>
+      <button id="btn-inspect">统计译文节点</button>
+      <label style="display: flex; align-items: center; gap: 4px">
+        <input type="checkbox" id="feature" checked />
+        网页翻译开关
+      </label>
+      <span id="status"></span>
+    </div>
+
+    <article>
+      <h1>The Pragmatic Programmer's Guide to Immersive Reading</h1>
+      <p class="meta">Published on October 1, 2026 · 8 minute read</p>
+
+      <p>
+        Reading in a second language is a skill that improves with volume. The problem is that most
+        learners stop at the first unfamiliar word, reach for a dictionary, and lose the thread of
+        the argument they were following.
+      </p>
+
+      <p>
+        Immersive translation solves this by putting the translation directly under the original
+        sentence. You keep reading in the original language, and you only glance down when you need
+        help. This is the <strong>core idea</strong> behind tools like <a href="#">this one</a>.
+      </p>
+
+      <h2>Why paragraph-level translation works</h2>
+
+      <p>
+        Sentence-level tools fragment the text and produce awkward output, because a translator
+        that only sees one sentence cannot resolve pronouns or keep terminology consistent across
+        a document.
+      </p>
+
+      <blockquote>
+        A translation unit that is too small loses context; one that is too large loses precision.
+        The paragraph is usually the right balance.
+      </blockquote>
+
+      <p>
+        There is one important exception: <code>code blocks</code> and configuration snippets should
+        never be translated, because their content is syntax rather than prose.
+      </p>
+
+      <pre>function translate(texts, target) {
+  return texts.map((text) =&gt; engine.translate(text, target));
+}</pre>
+
+      <h2>What to skip</h2>
+
+      <ul>
+        <li>Identifiers, file paths and command names</li>
+        <li>Content that is already written in the target language</li>
+        <li>Small fragments that carry no meaning on their own</li>
+      </ul>
+
+      <p>这是一段中文段落。目标语言是中文，所以它应该被跳过而不是被再翻译一遍。</p>
+
+      <h2>Throughput</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Approach</th>
+            <th>Requests per page</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Whole page at once</td>
+            <td>1 very large request</td>
+          </tr>
+          <tr>
+            <td>Visible area only</td>
+            <td>A few small requests</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <figure>
+        <svg class="mark" viewBox="0 0 120 60" role="img" aria-label="Decorative chart">
+          <rect x="4" y="4" width="112" height="52" fill="none" stroke="#d7d9df" />
+          <text x="12" y="34" font-size="12">icon label</text>
+        </svg>
+        <figcaption>Figure 1: an SVG label that must not be treated as prose.</figcaption>
+      </figure>
+
+      <p>
+        The result is a reading experience that stays out of your way. You can always copy text out
+        of the page: the copy handler strips the translations so the clipboard only contains the
+        original wording.
+      </p>
+
+      <p>
+        Finally, everything must be reversible. A single restore action should remove every
+        injected node and leave the document exactly as it was found.
+      </p>
+
+      <!-- 复现线上 bug：容器里只有一段脚本，其源码不应被当成正文送去翻译 -->
+      <div class="widget-host">
+        <script type="text/plain">
+          (function(){var ctid='eKIzJc';function r(a){return a.dataset.attnms===b});})();
+        </script>
+      </div>
+
+      <p>
+        Some pages embed configuration scripts inside ordinary containers. Those scripts render
+        nothing, so nothing inside them should ever reach the translator.
+      </p>
+
+      <h2>混合语言的实际场景</h2>
+      <p>
+        下面模仿搜索结果页：多种语言交错出现，其中还夹杂短片段与已经是中文的内容。
+      </p>
+
+      <div class="results">
+        <h3>これは日本語の検索結果です</h3>
+        <p>日本語のタイトルと説明文が含まれています。ひらがなとカタカナが混在しています。</p>
+
+        <h3>Understanding TypeScript generics in depth</h3>
+        <p>Generic constraints let you describe relationships between types.</p>
+
+        <h3>東京大学 大学院情報理工学系研究科</h3>
+        <p>東京都文京区本郷七丁目三番一号 情報理工学系研究科広報室</p>
+
+        <h3>한국어 검색 결과 제목입니다</h3>
+        <p>한국어로 작성된 설명문이며 중국어로 번역되어야 합니다.</p>
+
+        <h3>设置</h3>
+        <p>这是一段中文说明，目标语言就是中文，所以不应该被翻译，也不应该出现重复行。</p>
+      </div>
+
+      <h2>卡片式布局</h2>
+      <p>
+        下面复刻线上（enger.jp）的结构：整块卡片区用 <code>&lt;span&gt;</code> 和内联
+        <code>display</code> 搭建，内部没有块级标签，图标是 <code>aria-hidden</code> 的图标字体连字。
+      </p>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:16px 0">
+        <a href="#a" style="display:flex;flex-direction:column;gap:10px;padding:22px 20px;background:#fff;border:1px solid #EDE8DE;border-radius:10px;text-decoration:none;color:inherit">
+          <span aria-hidden="true" style="display:flex;width:44px;height:44px;border-radius:50%;background:#F6F3EC;align-items:center;justify-content:center">
+            <span class="ms" style="font-size:22px">work</span>
+          </span>
+          <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.12em;color:#8A6F51">案件を探している個人の方</span>
+          <span style="display:block;font-size:21px;font-weight:700">仕事を探す</span>
+          <span style="display:block;font-size:13px;color:#5F6B78">経験や希望条件に合う案件を探せます。スキルシートの作成から応募までサポートします。</span>
+          <span style="display:flex;align-items:center;gap:7px;font-size:13px;color:#C0521F;font-weight:700">案件・サポートを見る<span class="ms" aria-hidden="true" style="font-size:16px">arrow_forward</span></span>
+        </a>
+        <a href="#b" style="display:flex;flex-direction:column;gap:10px;padding:22px 20px;background:#fff;border:1px solid #EDE8DE;border-radius:10px;text-decoration:none;color:inherit">
+          <span aria-hidden="true" style="display:flex;width:44px;height:44px;border-radius:50%;background:#F6F3EC;align-items:center;justify-content:center">
+            <span class="ms" style="font-size:22px">groups</span>
+          </span>
+          <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.12em;color:#8A6F51">採用・業務委託を検討している企業</span>
+          <span style="display:block;font-size:21px;font-weight:700">人材を探す</span>
+          <span style="display:block;font-size:13px;color:#5F6B78">必要なスキルや体制に合う人材探しを支援します。採用や業務委託のご相談を承ります。</span>
+          <span style="display:flex;align-items:center;gap:7px;font-size:13px;color:#C0521F;font-weight:700">人材・支援内容を見る<span class="ms" aria-hidden="true" style="font-size:16px">arrow_forward</span></span>
+        </a>
+        <a href="#c" style="display:flex;flex-direction:column;gap:10px;padding:22px 20px;background:#fff;border:1px solid #EDE8DE;border-radius:10px;text-decoration:none;color:inherit">
+          <span aria-hidden="true" style="display:flex;width:44px;height:44px;border-radius:50%;background:#F6F3EC;align-items:center;justify-content:center">
+            <span class="ms" style="font-size:22px">hub</span>
+          </span>
+          <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.12em;color:#8A6F51">自社の人材サービスを運営する企業</span>
+          <span style="display:block;font-size:21px;font-weight:700">プラットフォーム開発</span>
+          <span style="display:block;font-size:13px;color:#5F6B78">求人管理や応募管理などの機能を、自社サイトやサービスに組み込む開発を支援します。</span>
+          <span style="display:flex;align-items:center;gap:7px;font-size:13px;color:#C0521F;font-weight:700">機能・導入方法を見る<span class="ms" aria-hidden="true" style="font-size:16px">arrow_forward</span></span>
+        </a>
+      </div>
+    </article>
+
+    <script src="page.js"></script>
+  </body>
+</html>
