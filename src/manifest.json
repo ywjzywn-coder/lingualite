@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "轻译 LinguaLite",
   "version": "0.0.0",
-  "description": "轻量的双语字幕与沉浸式翻译：YouTube/Bilibili 双语字幕、网页对照翻译、划词查词、生词本、无字幕视频语音转录。",
+  "description": "轻量沉浸式翻译：网页双语对照、可视区懒翻译、划词翻译与朗读；Google 免费接口兜底，支持自备 OpenAI 兼容模型。视频字幕、生词本开发中。",
   "minimum_chrome_version": "116",
   "icons": {
     "16": "icons/ic16.png",

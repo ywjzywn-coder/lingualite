@@ -237,4 +237,32 @@ describe('网页翻译生命周期', () => {
     expect(state.translateCalls[1]).toEqual(['Replaced while in flight']);
     expect(document.querySelector('.ll-tr')?.textContent).toBe('译(Replaced w)');
   });
+
+  it('深层容器内追加的段落会被局部重扫发现并翻译（不整页重扫）', async () => {
+    document.body.innerHTML = `
+      <section id="outer"><div id="list">
+        <p>First nested item</p><p>Second nested item</p>
+      </div></section>
+      <div id="far-away"><p>Unrelated distant paragraph stays untouched</p></div>`;
+    state.autoDetect = 'en';
+
+    await translatePage();
+    await tick(400);
+    expect(document.querySelectorAll('.ll-tr')).toHaveLength(3);
+    expect(state.translateCalls).toHaveLength(1);
+
+    // 只在深层容器 #list 里追加新段落：重扫根 = #list，从其父级扫描即可发现，
+    // 远处的 #far-away 不在扫描范围内（它已标记，行为上无差别，但扫描范围是局部的）
+    const list = document.querySelector('#list')!;
+    const p3 = document.createElement('p');
+    p3.textContent = 'Third item appended into the nested list';
+    list.append(p3);
+    await tick(900);
+
+    expect(state.translateCalls).toHaveLength(2);
+    expect(state.translateCalls[1]).toEqual(['Third item appended into the nested list']);
+    expect(document.querySelectorAll('.ll-tr')).toHaveLength(4);
+    // 已有段落的译文不受影响
+    expect(document.querySelector('#far-away .ll-tr')?.textContent).toBe('译(Unrelated )');
+  });
 });

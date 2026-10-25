@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="controls.css" />
     <link rel="stylesheet" href="components.css" />
     <style>
+      /* 内容直接铺满弹窗窗口，圆角由 Chrome 对弹窗窗口的原生裁切提供。
+         自己再画一层圆角边框，圆角半径和窗口裁切对不上，
+         四角会露出「方角包圆角」的空隙和一圈多余的方形描边。 */
       html {
         width: 320px;
         background: var(--background);
@@ -22,10 +25,6 @@
         display: flex;
         flex-direction: column;
         padding: 16px;
-        background: var(--background);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        overflow: hidden;
       }
     </style>
   </head>

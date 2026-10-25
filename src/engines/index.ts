@@ -1,7 +1,7 @@
 import { cacheGetMany, cachePutMany } from '../shared/cache';
 import { shortHash } from '../shared/hash';
 import { findProvider, type Settings } from '../shared/settings';
-import { GoogleEngine } from './google';
+import { GoogleEngine, splitBatches, splitLongText } from './google';
 import { LlmEngine } from './openai-compat';
 import { PROMPT_VERSION } from './prompt';
 import { TranslateError, type Engine, type TranslateRequest, type TranslateResult, type TranslateContext } from './types';
@@ -83,6 +83,7 @@ function dedupe(texts: string[]): { unique: string[]; mapping: number[] } {
   return { unique, mapping };
 }
 
+/** 跑引擎并返回译文与真实发出的批次数（用于元信息展示，不再用估算值）。 */
 async function runEngine(
   engine: Engine,
   texts: string[],
@@ -90,8 +91,9 @@ async function runEngine(
   to: string,
   context: TranslateContext | undefined,
   batchSize: number,
-): Promise<string[]> {
+): Promise<{ texts: string[]; batches: number }> {
   const out: string[] = [];
+  let batches = 0;
   for (let i = 0; i < texts.length; i += batchSize) {
     const slice = texts.slice(i, i + batchSize);
     const translated = await engine.translate(slice, from, to, context);
@@ -99,8 +101,23 @@ async function runEngine(
       throw new TranslateError(`${engine.label} 返回 ${translated.length} 段，期望 ${slice.length} 段`);
     }
     out.push(...translated);
+    batches += 1;
   }
-  return out;
+  return { texts: out, batches };
+}
+
+/**
+ * Google 引擎的真实 HTTP 请求数。
+ * 引擎内部还会按字符上限二次切批（超长单段先按句拆分），这里用同一套
+ * 切批逻辑预先算出实际会发出的请求数，让「请求 N 次」的展示可信。
+ */
+function countGoogleRequests(texts: string[]): number {
+  let total = 0;
+  for (let i = 0; i < texts.length; i += 40) {
+    const expanded = texts.slice(i, i + 40).flatMap((text) => splitLongText(text));
+    total += splitBatches(expanded).length;
+  }
+  return total;
 }
 
 /**
@@ -151,7 +168,7 @@ export async function translateTexts(req: TranslateRequest, settings: Settings):
     if (isLlm) {
       try {
         const engine = llmEngineFor(settings);
-        translatedMisses = await runEngine(
+        const llmRun = await runEngine(
           engine,
           misses,
           req.from,
@@ -159,7 +176,8 @@ export async function translateTexts(req: TranslateRequest, settings: Settings):
           req.context,
           provider?.batchSize ?? 10,
         );
-        requestCount = Math.ceil(misses.length / (provider?.batchSize ?? 10));
+        translatedMisses = llmRun.texts;
+        requestCount = llmRun.batches;
       } catch (err) {
         lastError = err;
       }
@@ -183,16 +201,17 @@ export async function translateTexts(req: TranslateRequest, settings: Settings):
         } else pending.push(i);
       }
       if (pending.length > 0) {
+        const pendingTexts = pending.map((i) => misses[i]!);
+        requestCount += countGoogleRequests(pendingTexts);
         const done = await runEngine(
           googleEngine,
-          pending.map((i) => misses[i]!),
+          pendingTexts,
           req.from,
           req.to,
           req.context,
           40,
         );
-        requestCount += Math.ceil(pending.length / 40);
-        for (let i = 0; i < pending.length; i++) translatedMisses[pending[i]!] = done[i]!;
+        for (let i = 0; i < pending.length; i++) translatedMisses[pending[i]!] = done.texts[i]!;
       }
       engineLabel = isLlm ? `${engineLabel}（失败后降级到 Google）` : googleEngine.label;
       if (!noCache) {

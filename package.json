@@ -1,6 +1,6 @@
 {
   "name": "lingualite",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "private": true,
   "type": "module",
   "description": "轻量的双语字幕与沉浸式翻译扩展",

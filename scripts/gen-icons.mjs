@@ -1,5 +1,5 @@
 // 生成扩展图标：纯 Node 手写 PNG 编码，避免引入图像处理依赖。
-// 图形为靛蓝圆角方块 + 两条白色字幕条。
+// 图形为靛蓝圆角方块 + 白色「A」字形（翻译的品牌符号，与内嵌 UI 的文/A 图标呼应）。
 import { deflateSync } from 'node:zlib';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -62,19 +62,37 @@ function roundRectDistance(px, py, x, y, w, h, r) {
   return Math.hypot(dx, dy) + Math.min(Math.max(cx, cy), 0) - r;
 }
 
-const BG = [79, 70, 229]; // #4F46E5
+/** 点到线段的距离：用胶囊（线段 + 半径）画笔画的「A」。 */
+function segmentDistance(px, py, ax, ay, bx, by) {
+  const abx = bx - ax;
+  const aby = by - ay;
+  const apx = px - ax;
+  const apy = py - ay;
+  const t = Math.max(0, Math.min(1, (apx * abx + apy * aby) / (abx * abx + aby * aby)));
+  return Math.hypot(apx - abx * t, apy - aby * t);
+}
+
+// 黑白配色：与界面 shadcn neutral 主题的主色一致（--primary ≈ #171717）
+const BG = [23, 23, 23]; // #171717
 const FG = [255, 255, 255];
 const SS = 4; // 超采样倍率，用于边缘抗锯齿
 
+/** A 的三笔：两条腿 + 横杠。笔画半径按 16px 下仍可读取值。 */
+const STROKE = 0.062;
+const A_LEGS = [
+  [0.345, 0.73, 0.5, 0.29], // 左腿
+  [0.5, 0.29, 0.655, 0.73], // 右腿
+];
+const A_BAR = [0.415, 0.575, 0.585, 0.575]; // 横杠
+
 /** 归一化坐标 (0..1) 下返回该点的颜色：返回 [r,g,b,a]，a 为 0..1。 */
 function sampleColor(u, v) {
-  const bgDist = roundRectDistance(u, v, 0.06, 0.06, 0.88, 0.88, 0.2);
+  const bgDist = roundRectDistance(u, v, 0.05, 0.05, 0.9, 0.9, 0.22);
   if (bgDist > 0) return [0, 0, 0, 0];
-  // 两条字幕条
-  const bar1 = roundRectDistance(u, v, 0.24, 0.33, 0.52, 0.13, 0.065);
-  if (bar1 <= 0) return [...FG, 1];
-  const bar2 = roundRectDistance(u, v, 0.24, 0.54, 0.32, 0.13, 0.065);
-  if (bar2 <= 0) return [...FG, 0.74];
+  for (const [ax, ay, bx, by] of A_LEGS) {
+    if (segmentDistance(u, v, ax, ay, bx, by) < STROKE) return [...FG, 1];
+  }
+  if (segmentDistance(u, v, A_BAR[0], A_BAR[1], A_BAR[2], A_BAR[3]) < STROKE) return [...FG, 1];
   return [...BG, 1];
 }
 

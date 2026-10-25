@@ -28,6 +28,13 @@ const FLUSH_DELAY_MS = 150;
 const RESCAN_DELAY_MS = 600;
 /** 预取范围：提前 1200px 开始翻译，滚动到该位置时译文已就绪。 */
 const ROOT_MARGIN = '1200px 0px 1200px 0px';
+/**
+ * 自有注入节点的识别选择器（模块常量：MutationObserver 回调每条记录都要用，
+ * 提为常量避免每次调用都重新构建字符串与选择器解析）。
+ */
+const OURS_SELECTOR = `.${TRANSLATION_CLASS}, #lingualite-chip, #lingualite-host, #lingualite-selection-trigger, [data-ll-ui]`;
+/** 局部重扫的根节点数上限：超过说明页面在整体重构，退回全量扫描。 */
+const RESCAN_ROOT_LIMIT = 12;
 
 export type StartResult = { started: boolean; reason?: string };
 
@@ -44,6 +51,8 @@ class PageTranslator {
   private touched = new Set<HTMLElement>();
   /** 原文被站点改掉、等待重扫确认的段落。 */
   private stale = new Set<HTMLElement>();
+  /** 发生过站点侧 DOM 变更的子树根，重扫时只扫这些位置。 */
+  private rescanRoots = new Set<Element>();
   /** 每个段落上次翻译/跳过时的原文，用于判断动态文本是否真的变了。 */
   private lastTexts = new WeakMap<HTMLElement, string>();
   private inflight = false;
@@ -96,6 +105,7 @@ class PageTranslator {
       this.failed = [];
       this.touched.clear();
       this.stale.clear();
+      this.rescanRoots.clear();
       this.inflight = false;
 
       injectStyle();
@@ -156,6 +166,7 @@ class PageTranslator {
     this.queue = [];
     this.failed = [];
     this.touched.clear();
+    this.rescanRoots.clear();
     this.inflight = false;
     this.done = 0;
     this.total = 0;
@@ -193,7 +204,7 @@ class PageTranslator {
     if (!this.active) return;
     const isOurs = (node: Node | null): boolean => {
       const element = node instanceof Element ? node : node?.parentElement ?? null;
-      return Boolean(element?.closest(`.${TRANSLATION_CLASS}, #lingualite-chip`));
+      return Boolean(element?.closest(OURS_SELECTOR));
     };
     let relevant = false;
     for (const record of records) {
@@ -208,7 +219,7 @@ class PageTranslator {
         relevant = true;
         continue;
       }
-      if (record.target instanceof Element && record.target.closest(`.${TRANSLATION_CLASS}`)) {
+      if (record.target instanceof Element && record.target.closest(OURS_SELECTOR)) {
         continue;
       }
       // 站点自己的 DOM 改动（新增或移除都算）：触发重扫
@@ -217,10 +228,12 @@ class PageTranslator {
         Array.from(record.removedNodes).some((node) => !isOurs(node));
       if (!hasForeign) continue;
       relevant = true;
-      // 虚拟列表复用、textContent 重写等场景会改写已翻译段落的内部结构：
-      // 该段落必须失效重翻，否则旧译文残留（或原文换掉后译文整段消失）。
-      // 自己插入译文走的是 .ll-tr 分支，不会进到这里。
       if (record.target instanceof Element) {
+        // 记下变更发生的子树：重扫只扫这里，滚动加载时不必整页遍历
+        this.rescanRoots.add(record.target);
+        // 虚拟列表复用、textContent 重写等场景会改写已翻译段落的内部结构：
+        // 该段落必须失效重翻，否则旧译文残留（或原文换掉后译文整段消失）。
+        // 自己插入译文走的是 OURS_SELECTOR 分支，不会进到这里。
         const host = record.target.closest(`[${BLOCK_ATTR}]`);
         if (host instanceof HTMLElement) {
           const state = host.getAttribute(BLOCK_ATTR);
@@ -256,10 +269,24 @@ class PageTranslator {
       this.observer.observe(block);
       added += 1;
     }
-    for (const block of collectBlocks(document.body)) {
-      if (this.touched.has(block)) continue;
-      this.observer.observe(block);
-      added += 1;
+    // 局部重扫：只遍历发生过变更的子树，社交 feed 滚动时不再整页重扫。
+    // 扫描从变更目标的父级开始——目标本身若是叶子段落（如 <p>），从它内部扫
+    // 会只看到行内子节点而漏掉它自己；从父级扫它就能按正常叶子处理。
+    // 根数量过多说明页面在整体重构（SPA 换页），退回全量扫描。
+    const recorded = this.rescanRoots;
+    this.rescanRoots = new Set();
+    const parentRoots = new Set<Element>();
+    for (const target of recorded) parentRoots.add(target.parentElement ?? target);
+    const scanRoots: Element[] =
+      parentRoots.size === 0 || parentRoots.size > RESCAN_ROOT_LIMIT
+        ? [document.body]
+        : Array.from(parentRoots);
+    for (const root of scanRoots) {
+      for (const block of collectBlocks(root)) {
+        if (this.touched.has(block)) continue;
+        this.observer.observe(block);
+        added += 1;
+      }
     }
     if (added > 0) log.debug(`重扫发现 ${added} 个更新段落`);
   }
