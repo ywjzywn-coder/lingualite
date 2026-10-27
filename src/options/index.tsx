@@ -436,21 +436,13 @@ function Options() {
         <div class="card-title">功能开关</div>
         {(
           [
-            ['page', '网页沉浸式翻译', true],
-            ['select', '划词 / 划句翻译', true],
-            ['video', '视频双语字幕（待开发）', false],
-            ['vocab', '生词本与生词高亮（待开发）', false],
-            ['asr', '无字幕视频语音转录（待开发）', false],
+            ['page', '网页沉浸式翻译'],
+            ['select', '划词 / 划句翻译'],
           ] as const
-        ).map(([key, label, enabled], index) => (
-          <label
-            class="switch"
-            key={key}
-            style={index === 0 ? '' : `margin-top:8px${enabled ? '' : ';opacity:.55'}`}
-          >
+        ).map(([key, label], index) => (
+          <label class="switch" key={key} style={index === 0 ? '' : 'margin-top:8px'}>
             <input
               type="checkbox"
-              disabled={!enabled}
               checked={settings.features[key]}
               onChange={(e) => update((c) => ({ ...c, features: { ...c.features, [key]: checked(e) } }))}
             />

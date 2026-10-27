@@ -18,7 +18,7 @@ type DetectCallback = (result: {
 }) => void;
 
 const state = {
-  settings: { features: { page: true, select: true, video: true, vocab: true, asr: true }, targetLang: 'zh-CN' },
+  settings: { features: { page: true, select: true }, targetLang: 'zh-CN' },
   /** manual：检测请求进队列由测试放行；auto：立刻按 autoDetect 返回。 */
   detectMode: 'auto' as 'auto' | 'manual',
   detectQueue: [] as DetectCallback[],

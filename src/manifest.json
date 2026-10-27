@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "轻译 LinguaLite",
   "version": "0.0.0",
-  "description": "轻量沉浸式翻译：网页双语对照、可视区懒翻译、划词翻译与朗读；Google 免费接口兜底，支持自备 OpenAI 兼容模型。视频字幕、生词本开发中。",
+  "description": "轻量沉浸式翻译：网页双语对照、可视区懒翻译、划词翻译与朗读；Google 免费接口兜底，支持自备 OpenAI 兼容模型。",
   "minimum_chrome_version": "116",
   "icons": {
     "16": "icons/ic16.png",
@@ -14,9 +14,7 @@
     "storage",
     "unlimitedStorage",
     "contextMenus",
-    "scripting",
-    "tabCapture",
-    "offscreen"
+    "scripting"
   ],
   "host_permissions": [
     "<all_urls>"

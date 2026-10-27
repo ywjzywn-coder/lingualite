@@ -7,7 +7,7 @@ describe('normalizeSettings', () => {
     expect(settings.engine).toBe('google');
     expect(settings.targetLang).toBe('zh-CN');
     expect(settings.providers).toHaveLength(1);
-    expect(settings.features.asr).toBe(true);
+    expect(settings.features.select).toBe(true);
   });
 
   it('修复越界与非法枚举', () => {
@@ -38,7 +38,7 @@ describe('normalizeSettings', () => {
   it('缺失的功能开关补成 true', () => {
     const settings = normalizeSettings({ features: { page: false } });
     expect(settings.features.page).toBe(false);
-    expect(settings.features.video).toBe(true);
+    expect(settings.features.select).toBe(true);
   });
 
   it('非法风格档回落到默认值', () => {

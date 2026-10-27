@@ -28,9 +28,6 @@ export interface ProviderConfig {
 export interface FeatureFlags {
   page: boolean;
   select: boolean;
-  video: boolean;
-  vocab: boolean;
-  asr: boolean;
 }
 
 export interface Settings {
@@ -116,7 +113,7 @@ export const DEFAULT_SETTINGS: Settings = {
   glossaryText: '',
   fallbackToGoogle: true,
   useContext: true,
-  features: { page: true, select: true, video: true, vocab: true, asr: true },
+    features: { page: true, select: true },
 };
 
 const EFFORTS: ReasoningEffort[] = ['default', 'none', 'low', 'medium', 'high'];
@@ -212,9 +209,6 @@ export function normalizeSettings(raw: unknown): Settings {
     features: {
       page: asBool(features.page, true),
       select: asBool(features.select, true),
-      video: asBool(features.video, true),
-      vocab: asBool(features.vocab, true),
-      asr: asBool(features.asr, true),
     },
   };
 }

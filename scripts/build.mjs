@@ -14,14 +14,12 @@ const ENTRIES = [
   { out: 'content.js', in: 'src/content/index.ts' },
   { out: 'popup.js', in: 'src/popup/index.tsx' },
   { out: 'options.js', in: 'src/options/index.tsx' },
-  { out: 'offscreen.js', in: 'src/offscreen/index.ts' },
 ];
 
 /** 直接复制的静态资源。 */
 const STATIC = [
   ['src/popup/popup.html', 'popup.html'],
   ['src/options/options.html', 'options.html'],
-  ['src/offscreen/offscreen.html', 'offscreen.html'],
   ['src/ui/tokens.css', 'tokens.css'],
   ['src/ui/controls.css', 'controls.css'],
   ['src/ui/components.css', 'components.css'],
